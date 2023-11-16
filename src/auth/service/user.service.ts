@@ -13,9 +13,9 @@ export class UserService {
     const user = await this.userRepo.findOneByEmail(dto.email);
     if (user) {
       throw new BusinessException(
-        'user',
-        '${dto.email} already exist',
-        '${dto.email} already exist',
+        `auth`,
+        `${dto.email} 은 이미 가입된 이메일 입니다.`,
+        `${dto.email} 은 이미 가입된 이메일 입니다.`,
         HttpStatus.CONFLICT,
       );
     }

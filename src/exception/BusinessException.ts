@@ -1,3 +1,5 @@
+// src/exception/BusinessException.ts
+
 import { HttpStatus } from '@nestjs/common';
 
 export type ErrorDomain = 'auth' | 'user';
@@ -9,10 +11,10 @@ export class BusinessException extends Error {
   constructor(
     public readonly domain: ErrorDomain,
     public readonly message: string, // loggin message
-    public readonly apiMessage: string, //user message
+    public readonly apiMessage: string, // user message
     public readonly status: HttpStatus,
   ) {
-    super(message);
+    super(apiMessage);
     this.id = BusinessException.genId();
     this.timestamp = new Date();
   }
