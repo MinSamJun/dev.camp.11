@@ -14,7 +14,7 @@ import { User } from './auth/entities';
       host: 'localhost',
       port: 3306,
       username: 'root',
-      password: '@976045qQ!',
+      password: 'devcamp11',
       database: 'devcamp11',
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
       synchronize: true,
