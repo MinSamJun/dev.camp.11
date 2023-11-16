@@ -23,7 +23,6 @@ export class AuthController {
         console.error('Internal Server Error:', error.message);
         throw error;
       } else if (error instanceof BusinessException) {
-        // BusinessException을 캐치하여 적절한 응답을 클라이언트에게 반환
         throw new HttpException(
           { message: error.apiMessage, statusCode: error.status },
           error.status,

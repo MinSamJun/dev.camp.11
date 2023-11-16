@@ -14,8 +14,8 @@ export class UserService {
     if (user) {
       throw new BusinessException(
         `auth`,
-        `${dto.email} 은 이미 가입된 이메일 입니다.`,
-        `${dto.email} 은 이미 가입된 이메일 입니다.`,
+        `${dto.email} 은/는 이미 가입된 이메일 입니다.`,
+        `${dto.email} 은/는 이미 가입된 이메일 입니다.`,
         HttpStatus.CONFLICT,
       );
     }
