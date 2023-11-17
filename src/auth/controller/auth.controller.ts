@@ -19,18 +19,20 @@ export class AuthController {
     try {
       return await this.userService.createUser(createUserDto);
     } catch (error) {
+      console.error('Error occurred:', error);
+
       if (error instanceof InternalServerErrorException) {
-        console.error('Internal Server Error:', error.message);
         throw error;
-      } else if (error instanceof BusinessException) {
+      }
+
+      if (error instanceof BusinessException) {
         throw new HttpException(
           { message: error.apiMessage, statusCode: error.status },
           error.status,
         );
-      } else {
-        console.error('Unexpected Error:', error);
-        throw new InternalServerErrorException(error.message);
       }
+
+      throw new InternalServerErrorException(error.message);
     }
   }
 }
