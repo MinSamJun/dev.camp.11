@@ -5,14 +5,17 @@ import {
   InternalServerErrorException,
   HttpException,
 } from '@nestjs/common';
-import { UserService } from '../service';
-import { CreateUserDto } from '../dto';
+import { UserService, AuthService } from '../service';
+import { CreateUserDto, LoginReqDto, LoginResDto } from '../dto';
 import { User } from '../entities';
 import { BusinessException } from '../../exception/BusinessException';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly userService: UserService,
+    private readonly AuthService: AuthService,
+  ) {}
 
   @Post('signup')
   async signup(@Body() createUserDto: CreateUserDto): Promise<User> {
@@ -34,5 +37,10 @@ export class AuthController {
 
       throw new InternalServerErrorException(error.message);
     }
+  }
+
+  @Post('login')
+  async login(@Body() loginReqDto: LoginReqDto): Promise<LoginResDto> {
+    return this.AuthService.login(loginReqDto.email, loginReqDto.password);
   }
 }
