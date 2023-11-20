@@ -14,7 +14,7 @@ import { BusinessException } from '../../exception/BusinessException';
 export class AuthController {
   constructor(
     private readonly userService: UserService,
-    private readonly AuthService: AuthService,
+    private readonly authService: AuthService,
   ) {}
 
   @Post('signup')
@@ -41,6 +41,6 @@ export class AuthController {
 
   @Post('login')
   async login(@Body() loginReqDto: LoginReqDto): Promise<LoginResDto> {
-    return this.AuthService.login(loginReqDto.email, loginReqDto.password);
+    return this.authService.login(loginReqDto.email, loginReqDto.password);
   }
 }
