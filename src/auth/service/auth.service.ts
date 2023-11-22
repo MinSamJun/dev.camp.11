@@ -29,14 +29,25 @@ export class AuthService {
     const user = await this.validateUser(email, plainPassword);
     const payload: tokenPayload = this.createTokenPayload(user.id);
 
-    const [accessToken, refreshToken] = await Promise.all([
-      this.createAccessToken(user, payload),
-      this.createRefreshToken(user, payload),
-    ]);
+    let accessToken: Promise<string> = Promise.resolve('');
+    let refreshToken: Promise<string> = Promise.resolve('');
+
+    const existingAccessToken =
+      await this.accessTokenRepository.findAccessTokenByUserId(user.id);
+    const existingRefreshToken =
+      await this.refreshTokenRepository.findRefreshTokenByUserId(user.id);
+
+    if (existingAccessToken && existingRefreshToken) {
+      accessToken = Promise.resolve(existingAccessToken.token);
+      refreshToken = Promise.resolve(existingRefreshToken.token);
+    } else {
+      accessToken = this.createAccessToken(user, payload);
+      refreshToken = this.createRefreshToken(user, payload);
+    }
 
     return {
-      accessToken,
-      refreshToken,
+      accessToken: await accessToken,
+      refreshToken: await refreshToken,
     };
   }
 
@@ -60,7 +71,7 @@ export class AuthService {
     user: User,
     payload: tokenPayload,
   ): Promise<string> {
-    const expiresIn = this.configService.get<string>('ACESS_TOKEN_EXPIRY');
+    const expiresIn = this.configService.get<string>('ACCESS_TOKEN_EXPIRY');
     const token = this.jwtService.sign(payload, { expiresIn });
     const expiresAt = this.calculateExpiry(expiresIn);
 

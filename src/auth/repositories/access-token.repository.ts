@@ -24,4 +24,10 @@ export class AccessTokenRepository {
 
     return this.repo.save(accessToken);
   }
+
+  async findAccessTokenByUserId(
+    userId: string,
+  ): Promise<AccessToken | undefined> {
+    return this.repo.findOne({ where: { user: { id: userId } } });
+  }
 }

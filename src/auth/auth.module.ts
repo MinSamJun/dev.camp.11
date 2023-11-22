@@ -18,7 +18,7 @@ import { User, AccessToken, RefreshToken } from './entities';
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
-        secret: configService.get<string>('JWT_SECRET'),
+        secret: configService.get<string>('JWT_SECRET_KEY'),
         signOptions: {
           expiresIn: configService.get<string>('ACCESS_TOKEN_EXPIRY'),
         },
@@ -40,6 +40,12 @@ import { User, AccessToken, RefreshToken } from './entities';
     AccessTokenRepository,
     RefreshTokenRepository,
   ],
-  exports: [UserService, AuthService, UserRepository],
+  exports: [
+    UserService,
+    AuthService,
+    UserRepository,
+    AccessTokenRepository,
+    RefreshTokenRepository,
+  ],
 })
 export class AuthModule {}

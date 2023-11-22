@@ -27,4 +27,10 @@ export class RefreshTokenRepository extends Repository<RefreshToken> {
     refreshToken.expiresAt = expiresAt;
     return this.save(refreshToken);
   }
+
+  async findRefreshTokenByUserId(
+    userId: string,
+  ): Promise<RefreshToken | undefined> {
+    return this.repo.findOne({ where: { user: { id: userId } } });
+  }
 }
