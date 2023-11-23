@@ -1,41 +1,40 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './auth/auth.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { User } from './auth/entities';
-import { JwtModule } from '@nestjs/jwt';
 import { UserRepository } from './auth/repositories';
-import * as dotenv from 'dotenv';
-dotenv.config();
-
-type DbType = 'mariadb';
+import { TypeOrmModuleOptions } from '@nestjs/typeorm';
+import { configSchema } from './config/configSchema';
+import configuration from './config/configuration';
 
 @Module({
   imports: [
     AuthModule,
-    TypeOrmModule.forRootAsync({
-      useFactory: () => ({
-        type: process.env.DB_TYPE as DbType,
-        host: process.env.DB_HOST,
-        port: parseInt(process.env.DB_PORT, 10),
-        username: process.env.DB_USERNAME,
-        password: process.env.DB_PASSWORD,
-        database: process.env.DB_DATABASE,
-        entities: [__dirname + '/**/*.entity{.ts,.js}'],
-        synchronize: true,
-        logging: true,
-      }),
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: '.env',
+      validationSchema: configSchema,
+      load: [configuration.loadYamlConfig],
     }),
-    ConfigModule.forRoot(),
-    JwtModule.registerAsync({
-      imports: [ConfigModule],
-      useFactory: async (configService: ConfigService) => ({
-        secret: configService.get<string>('JWT_SECRET_KEY'),
-        signOptions: { expiresIn: '1d' },
-      }),
-      inject: [ConfigService],
+    TypeOrmModule.forRootAsync({
+      useFactory: async () => {
+        const dbConfig = await configuration.loadYamlConfig();
+
+        return {
+          type: dbConfig.DATABASE.DB_TYPE,
+          host: dbConfig.HTTP.DB_HOST,
+          port: dbConfig.HTTP.DB_PORT,
+          username: dbConfig.DATABASE.DB_USERNAME,
+          password: dbConfig.DATABASE.DB_PASSWORD,
+          database: dbConfig.DATABASE.DB_DATABASE,
+          entities: [__dirname + '/**/*.entity{.ts,.js}'],
+          synchronize: true,
+          logging: true,
+        } as TypeOrmModuleOptions;
+      },
     }),
     TypeOrmModule.forFeature([User]),
   ],
