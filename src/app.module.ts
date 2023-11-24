@@ -22,6 +22,7 @@ import configuration from './config/configuration';
     TypeOrmModule.forRootAsync({
       useFactory: async () => {
         const dbConfig = await configuration.loadYamlConfig();
+        console.log(dbConfig);
 
         return {
           type: dbConfig.DATABASE.DB_TYPE,

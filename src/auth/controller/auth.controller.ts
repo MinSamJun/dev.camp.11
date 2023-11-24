@@ -6,15 +6,17 @@ import {
   HttpException,
 } from '@nestjs/common';
 import { UserService, AuthService } from '../service';
-import { CreateUserDto, LoginReqDto, LoginResDto } from '../dto';
-import { User } from '../entities';
+import { CreateUserDto, LoginReqDto, LoginResDto, LogoutReqDto } from '../dto';
+import { User, TokenBlacklist } from '../entities';
 import { BusinessException } from '../../exception/BusinessException';
+import { TokenBlacklistService } from '../service';
 
 @Controller('auth')
 export class AuthController {
   constructor(
     private readonly userService: UserService,
     private readonly authService: AuthService,
+    private readonly tokenBlacklistService: TokenBlacklistService,
   ) {}
 
   @Post('signup')
@@ -42,5 +44,10 @@ export class AuthController {
   @Post('login')
   async login(@Body() loginReqDto: LoginReqDto): Promise<LoginResDto> {
     return this.authService.login(loginReqDto.email, loginReqDto.password);
+  }
+
+  @Post('logout')
+  async logout(@Body() dto: LogoutReqDto): Promise<TokenBlacklist> {
+    return await this.tokenBlacklistService.addToBlacklist(dto);
   }
 }
