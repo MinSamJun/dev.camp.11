@@ -15,6 +15,11 @@ export class TokenBlacklistRepository extends Repository<TokenBlacklist> {
     super(repo.target, repo.manager, repo.queryRunner);
   }
 
+  async isTokenBlacklisted(jti: string): Promise<boolean> {
+    const foundToken = await this.findOne({ where: { jti } });
+    return !!foundToken;
+  }
+
   async addToken(dto: LogoutReqDto): Promise<TokenBlacklist> {
     const blacklistedToken = new TokenBlacklist();
     blacklistedToken.token = dto.token;

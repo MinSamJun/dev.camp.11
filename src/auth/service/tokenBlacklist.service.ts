@@ -10,6 +10,12 @@ export class TokenBlacklistService {
   ) {}
 
   async addToBlacklist(dto: LogoutReqDto): Promise<TokenBlacklist> {
-    return await this.tokenBlacklistRepository.addToken(dto);
+    const foundToken = await this.tokenBlacklistRepository.isTokenBlacklisted(
+      dto.jti,
+    );
+    if (foundToken) {
+    } else {
+      return await this.tokenBlacklistRepository.addToken(dto);
+    }
   }
 }
