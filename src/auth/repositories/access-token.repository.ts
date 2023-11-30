@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
-import { AccessToken, User } from '../entities';
+import { AccessToken, User, RefreshToken } from '../entities';
 import { InjectRepository } from '@nestjs/typeorm';
+import { LogoutReqDto, LogoutResDto } from '../dto';
 
 @Injectable()
 export class AccessTokenRepository {
@@ -21,6 +22,7 @@ export class AccessTokenRepository {
     accessToken.user = user;
     accessToken.token = token;
     accessToken.expiresAt = expiresAt;
+    accessToken.isWithdrawal = false;
 
     return this.repo.save(accessToken);
   }
@@ -29,5 +31,20 @@ export class AccessTokenRepository {
     userId: string,
   ): Promise<AccessToken | undefined> {
     return this.repo.findOne({ where: { user: { id: userId } } });
+  }
+
+  async isTokenWithdrawal(jti: string): Promise<AccessToken> {
+    const foundAccessToken = await this.repo.findOne({ where: { jti } });
+    return foundAccessToken;
+  }
+
+  async withdrawalToken(dto: string): Promise<LogoutResDto> {
+    const foundTokenAccess = await this.repo.findOne({
+      where: { jti: dto },
+    });
+    foundTokenAccess.isWithdrawal = true;
+    await this.repo.save(foundTokenAccess);
+
+    return { message: 'logoutComplete' };
   }
 }

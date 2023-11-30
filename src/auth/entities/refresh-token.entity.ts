@@ -15,4 +15,7 @@ export class RefreshToken extends BaseEntity {
 
   @Column({ type: 'timestamp' })
   expiresAt: Date;
+
+  @Column({ default: false })
+  isWithdrawal: boolean;
 }

@@ -15,4 +15,7 @@ export class AccessToken extends BaseEntity {
 
   @Column({ type: 'timestamp' })
   expiresAt: Date;
+
+  @Column()
+  isWithdrawal: boolean;
 }

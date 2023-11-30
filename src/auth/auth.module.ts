@@ -3,14 +3,13 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { AuthController } from './controller';
-import { UserService, AuthService, TokenBlacklistService } from './service';
+import { UserService, AuthService } from './service';
 import {
   UserRepository,
   AccessTokenRepository,
   RefreshTokenRepository,
-  TokenBlacklistRepository,
 } from './repositories';
-import { User, AccessToken, RefreshToken, TokenBlacklist } from './entities';
+import { User, AccessToken, RefreshToken } from './entities';
 
 @Module({
   imports: [
@@ -25,13 +24,7 @@ import { User, AccessToken, RefreshToken, TokenBlacklist } from './entities';
         },
       }),
     }),
-    TypeOrmModule.forFeature([
-      User,
-      UserRepository,
-      AccessToken,
-      RefreshToken,
-      TokenBlacklist,
-    ]),
+    TypeOrmModule.forFeature([User, AccessToken, RefreshToken]),
   ],
   controllers: [AuthController],
   providers: [
@@ -40,8 +33,6 @@ import { User, AccessToken, RefreshToken, TokenBlacklist } from './entities';
     UserRepository,
     AccessTokenRepository,
     RefreshTokenRepository,
-    TokenBlacklistService,
-    TokenBlacklistRepository,
   ],
   exports: [
     UserService,
@@ -49,8 +40,6 @@ import { User, AccessToken, RefreshToken, TokenBlacklist } from './entities';
     UserRepository,
     AccessTokenRepository,
     RefreshTokenRepository,
-    TokenBlacklistService,
-    TokenBlacklistRepository,
   ],
 })
 export class AuthModule {}

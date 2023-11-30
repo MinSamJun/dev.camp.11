@@ -1,5 +1,5 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
-import { LoginResDto } from '../dto';
+import { LoginResDto, LogoutReqDto, LogoutResDto } from '../dto';
 import { BusinessException } from 'src/exception';
 import * as argon2 from 'argon2';
 import { User } from '../entities';
@@ -85,22 +85,44 @@ export class AuthService {
     return token;
   }
 
-  private calculateExpiry(expiry: string): Date {
-    let expireInMilliseconds = 0;
+  // private calculateExpiry(expiry: string): Date {
+  //   let expireInMilliseconds = 0;
 
-    if (expiry.endsWith('d')) {
-      const days = parseInt(expiry.slice(0, -1), 10);
-      expireInMilliseconds = days * 24 * 60 * 60 * 1000;
-    } else if (expiry.endsWith('h')) {
-      const hours = parseInt(expiry.slice(0, -1), 10);
-      expireInMilliseconds = hours * 60 * 60 * 1000;
-    } else if (expiry.endsWith('m')) {
-      const minutes = parseInt(expiry.slice(0, -1), 10);
-      expireInMilliseconds = minutes * 60 * 1000;
-    } else if (expiry.endsWith('s')) {
-      const seconds = parseInt(expiry.slice(0, -1), 10);
-      expireInMilliseconds = seconds * 1000;
-    } else {
+  //   if (expiry.endsWith('d')) {
+  //     const days = parseInt(expiry.slice(0, -1), 10);
+  //     expireInMilliseconds = days * 24 * 60 * 60 * 1000;
+  //   } else if (expiry.endsWith('h')) {
+  //     const hours = parseInt(expiry.slice(0, -1), 10);
+  //     expireInMilliseconds = hours * 60 * 60 * 1000;
+  //   } else if (expiry.endsWith('m')) {
+  //     const minutes = parseInt(expiry.slice(0, -1), 10);
+  //     expireInMilliseconds = minutes * 60 * 1000;
+  //   } else if (expiry.endsWith('s')) {
+  //     const seconds = parseInt(expiry.slice(0, -1), 10);
+  //     expireInMilliseconds = seconds * 1000;
+  //   } else {
+  //     throw new BusinessException(
+  //       'auth',
+  //       'invalid-expiry',
+  //       'Invalid expiry time',
+  //       HttpStatus.BAD_GATEWAY,
+  //     );
+  //   }
+  //   return new Date(Date.now() + expireInMilliseconds);
+  // }
+
+  private calculateExpiry(expiry: string): Date {
+    const timeUnits: Record<string, number> = {
+      d: 24 * 60 * 60 * 1000, // days
+      h: 60 * 60 * 1000, // hours
+      m: 60 * 1000, // minutes
+      s: 1000, // seconds
+    };
+
+    const unit = expiry.slice(-1);
+    const value = parseInt(expiry.slice(0, -1), 10);
+
+    if (!(unit in timeUnits)) {
       throw new BusinessException(
         'auth',
         'invalid-expiry',
@@ -108,6 +130,8 @@ export class AuthService {
         HttpStatus.BAD_GATEWAY,
       );
     }
+
+    const expireInMilliseconds = timeUnits[unit] * value;
     return new Date(Date.now() + expireInMilliseconds);
   }
 
@@ -134,5 +158,30 @@ export class AuthService {
       iat: Math.floor(Date.now() / 1000),
       jti: uuidv4(),
     };
+  }
+
+  async withdrawalToken(dto: LogoutReqDto): Promise<LogoutResDto> {
+    if (!dto.jti) {
+      return { message: 'nonjti' };
+    }
+
+    const foundAccessToken = await this.accessTokenRepository.isTokenWithdrawal(
+      dto.jti,
+    );
+    const foundRefreshToken =
+      await this.refreshTokenRepository.isTokenWithdrawal(dto.jti);
+
+    if (!foundAccessToken && !foundRefreshToken) {
+      return { message: 'nonExistToken' };
+    } else if (
+      (foundAccessToken && foundAccessToken.isWithdrawal) ||
+      (foundRefreshToken && foundRefreshToken.isWithdrawal)
+    ) {
+      return { message: 'alreadyLogoutedToken' };
+    } else {
+      await this.accessTokenRepository.withdrawalToken(dto.jti);
+      await this.refreshTokenRepository.withdrawalToken(dto.jti);
+      return { message: 'logoutComplete' };
+    }
   }
 }
