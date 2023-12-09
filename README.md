@@ -63,9 +63,56 @@ export const configSchema = Joi.object({
   DB_PASSWORD: Joi.string().required(),
   DB_DATABASE: Joi.string().required(),
 });
-
 ```
 
+```
+// src/config/configuration.ts
+
+import { readFileSync } from 'fs';
+import * as yaml from 'js-yaml';
+import { join } from 'path';
+import { ConfigFactory } from '@nestjs/config';
+
+const env = process.env.ENV || 'local';
+const CONFIG_YAML = `${env}.yaml`;
+
+const loadYamlConfig: ConfigFactory<Record<string, any>> = () => {
+  try {
+    const rootPath = process.cwd(); // 프로젝트 루트 경로
+    const yamlFile = readFileSync(
+      join(rootPath, 'src', 'config', CONFIG_YAML),
+      'utf8',
+    );
+    return yaml.load(yamlFile) as Record<string, any>;
+  } catch (error) {
+    console.error('Error loading YAML config:', error);
+    return {};
+  }
+};
+
+const configuration = {
+  loadYamlConfig,
+};
+
+export default configuration;
+```
+
+```
+/src/auth/config/local.yaml
+env: local
+
+HTTP:
+  HOST: 'localhost'
+  PORT: 6666
+
+DATABASE:
+  DB_TYPE: 'mariadb'
+  DB_HOST: 'localhost'
+  DB_USERNAME: 'root'
+  DB_PASSWORD: 
+  DB_PORT: 
+  DB_DATABASE: 
+```
 ##  API 명세서
 https://universal-ocarina-169.notion.site/API-afe8b0657f8545549937a866a90b811d
 
