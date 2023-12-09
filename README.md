@@ -12,12 +12,18 @@
 
 ## 사용 기술
 Nest.js
+ConfigModule: 환경 변수를 관리하고 설정을 로드하기 위해 Nest.js에서 제공하는 모듈입니다.
+JwtModule: JWT(JSON Web Token)를 사용하기 위한 Nest.js 모듈로, 비동기적으로 JWT 옵션을 설정하여 토큰의 시크릿 키와 만료 시간을 정의합니다.
+TypeOrmModule: Nest.js에서 제공하는 TypeORM 모듈로, 데이터베이스와의 상호 작용을 위한 모델 및 리포지토리를 설정합니다.
 
 ## 실행 방법
 프로젝트를 클론합니다.
 npm install로 필요한 패키지를 설치합니다.
 설정 파일을 작성하고 환경 변수를 설정합니다.
 npm start로 서버를 실행합니다.
+
+##  API 명세서
+https://universal-ocarina-169.notion.site/API-afe8b0657f8545549937a866a90b811d
 
 ## 기여자
 백엔드 : 김민준
