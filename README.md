@@ -10,11 +10,11 @@
 
 
 ## 사용 기술
-Nest.js: 타입스크립트로 작성된 Node.js 앱을 구축하기 위한 프레임 워크입입니다.
-ConfigModule: 환경 변수를 관리하고 설정을 로드하기 위해 Nest.js에서 제공하는 모듈입니다.
-JwtModule: JWT를 사용하기 위한 Nest.js 모듈입니다. 페이로드에 sub, jti, iat, exp를 암호화하여 넣습니다.
-TypeOrmModule: Nest.js에서 제공하는 TypeORM 모듈로, 데이터베이스와의 상호 작용을 위한 모델 및 리포지토리를 설정합니다.
-nestjs/schedule: 서버가 실행되거나 정해진 주기마다 예약된 메서드를 실행시키는 라이브러리
+1. Nest.js: 타입스크립트로 작성된 Node.js 앱을 구축하기 위한 프레임 워크입입니다.
+1. ConfigModule: 환경 변수를 관리하고 설정을 로드하기 위해 Nest.js에서 제공하는 모듈입니다.
+1. JwtModule: JWT를 사용하기 위한 Nest.js 모듈입니다. 페이로드에 sub, jti, iat, exp를 암호화하여 넣습니다.
+1. TypeOrmModule: Nest.js에서 제공하는 TypeORM 모듈로, 데이터베이스와의 상호 작용을 위한 모델 및 리포지토리를 설정합니다.
+1. nestjs/schedule: 서버가 실행되거나 정해진 주기마다 예약된 메서드를 실행시키는 라이브러리
 
 ## 실행 방법
 1. 프로젝트를 클론합니다.
